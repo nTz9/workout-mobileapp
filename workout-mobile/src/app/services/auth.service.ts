@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import firebase from 'firebase/compat/app';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -23,5 +23,9 @@ export class AuthService {
 
   async getCurrentUser() {
     return await this.ngFireAuth.currentUser;
+  }
+
+  isAuthenticated(): Observable<any> {
+    return this.ngFireAuth.authState;
   }
 }

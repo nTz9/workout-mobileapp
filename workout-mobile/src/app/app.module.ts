@@ -21,9 +21,10 @@ import { FormsModule } from '@angular/forms';
 import { environment } from 'src/environments/environment';
 import { AngularFireModule } from '@angular/fire/compat';
 import { RegisterComponent } from './pages/register/register.component';
+import { TabsComponent } from './tabs/tabs/tabs.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, CalendarComponent, WorkoutComponent, RegisterComponent],
+  declarations: [AppComponent, LoginComponent, CalendarComponent, WorkoutComponent, RegisterComponent, TabsComponent],
   imports: [
     BrowserModule, 
     IonicModule.forRoot(), 
