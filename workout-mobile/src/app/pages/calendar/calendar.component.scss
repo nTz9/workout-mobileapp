@@ -67,6 +67,110 @@
     right: 5px; /* Ajustează distanța indicatorului față de marginea dreaptă */
 }
 
+
+/* Ion modal form*/
+ion-modal {
+    --border-radius: 10px;
+    --background: #f9f9f9;
+}
+
+.add-item-card {
+    margin: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+.add-item-card ion-card-header {
+    background-color: #fff;
+    color: #fff;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 15px;
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.add-item-card form {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+
+.add-item-card ion-item {
+    margin-bottom: 15px;
+    --background: #f0f0f0;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    border-radius: 5px;
+    --inner-border-radius: 5px;
+}
+
+.add-item-card ion-input {
+    --padding-start: 10px;
+    --padding-end: 10px;
+}
+
+.set-table-container {
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+/* Table Header */
+.set-table-header {
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 5px;
+    text-align: center;
+}
+
+/* Table Rows */
+.set-table-row {
+    border-radius: 5px;
+    margin-top: 10px;
+    align-items: center;
+    text-align: center;
+}
+
+/* Table Cells */
+.set-table-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    text-align: center;
+}
+
+/* Buttons for modal form*/
+.button-row {
+    margin: 10px 0; /* Marginea pentru separare */
+  }
+  
+  .button-row ion-col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .button-row ion-button {
+    margin: 0; /* Elimină marginea pentru aliniere precisă */
+  }
+  
+  .button-add-set {
+    padding: 0;
+    height: 50px;
+    width: 50px; /* Lățimea fixă pentru butonul rotund */
+  }
+
+  
+  .full-width-button {
+    width: 100%; /* Lățimea completă a coloanei */
+  }
+  
+  
+  
+  
+
 /* Add Workout Form */
 .add-item-card, .workouts-list-card {
     margin: 10px;
@@ -86,6 +190,17 @@
     flex-direction: column;
     align-items: flex-end;
     padding: 10px;
+}
+
+.t-c{
+    text-align: center;
+}
+.pad-3 {
+    padding-right: 3px;
+}
+.m-5{
+    margin: 5px;
+
 }
 
 .workouts-list-card ion-grid {
@@ -139,7 +254,6 @@
 }
 
 .add-button {
-    --border-radius: 50px; /* Pentru a face butonul oval */
     width: 150px;
     height: 40px;
     text-align: center;
@@ -179,6 +293,15 @@ ion-grid {
     .workouts-list-card ion-label p {
         font-size: 0.9em;
     }
+
+    .set-table-header {
+        font-size: 0.8em;
+        padding: 8px;
+    }
+
+    .set-table-row {
+        padding: 8px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -198,5 +321,18 @@ ion-grid {
 
     .workouts-list-card ion-label p {
         font-size: 0.8em;
+    }
+
+    .set-table-header {
+        font-size: 0.7em;
+        padding: 6px;
+    }
+
+    .set-table-row {
+        padding: 6px;
+    }
+    .set-table-col {
+        padding: 4px;
+        font-size: 0.8em; /* Adjusted font size for smaller screens */
     }
 }

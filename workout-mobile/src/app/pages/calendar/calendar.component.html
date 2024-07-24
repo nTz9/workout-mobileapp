@@ -39,8 +39,8 @@
 
   <!-- Lista Antrenamentelor pentru ziua selectată -->
   <ion-card *ngIf="selectedDay" class="workouts-list-card">
-    <ion-card-header>
-      <ion-card-title>Activități fizice pentru ziua {{ selectedDay | date:'dd/MM/yyyy' }}</ion-card-title>
+    <ion-card-header class="m-5">
+      <ion-card-title><ion-icon name="bicycle" class="pad-3"></ion-icon> Activități fizice pentru ziua {{ selectedDay | date:'dd/MM/yyyy' }}</ion-card-title>
     </ion-card-header>
     <ion-card-content *ngIf="events[formatDate(selectedDay)] && events[formatDate(selectedDay)].length > 0">
       <ion-list>
@@ -51,6 +51,7 @@
               <ion-col size="6" class="training-details">
                 <h3>{{ workout.trainingType }}</h3>
                 <p>Exercițiu: {{ workout.exercise }}</p>
+                <ion-icon name="barbell" size="large"></ion-icon>
               </ion-col>
               <!-- Right Side: Sets Table -->
               <ion-col size="6" class="sets-details">
@@ -70,8 +71,11 @@
         </ion-item>
       </ion-list>
     </ion-card-content>
+    <ion-card-content *ngIf="!events[formatDate(selectedDay)] || events[formatDate(selectedDay)].length === 0" class="t-c">
+      <p>Nu ai nicio activitate fizică adăugată</p>
+    </ion-card-content>
     <ion-card-content class="button-container">
-      <ion-button expand="full" color="primary" (click)="openAddWorkoutModal()" class="add-button">
+      <ion-button expand="full" shape="round" color="primary" (click)="openAddWorkoutModal()" class="add-button">
         <ion-icon name="add"></ion-icon> Adaugă
       </ion-button>
     </ion-card-content>
@@ -105,16 +109,48 @@
               </ion-item>
               
               <!-- Seturi -->
-              <ion-item class="set-item" *ngFor="let set of sets; let i = index">
-                <ion-label>Set {{ i + 1 }}</ion-label>
-                <ion-input type="number" [(ngModel)]="set.weight" name="weight{{ i }}" placeholder="Greutate (kg)"></ion-input>
-                <ion-input type="number" [(ngModel)]="set.reps" name="reps{{ i }}" placeholder="Repetiții"></ion-input>
-                <ion-button color="danger" (click)="removeSet(i)">Șterge Set</ion-button>
+              <ion-item class="set-table-container" *ngIf="sets.length > 0">
+                <ion-grid>
+                  <ion-row class="set-table-header">
+                    <ion-col size="3"><strong>Set</strong></ion-col>
+                    <ion-col size="3"><strong>Greutate (kg)</strong></ion-col>
+                    <ion-col size="3"><strong>Repetari</strong></ion-col>
+                    <ion-col size="3"><strong>Acțiuni</strong></ion-col>
+                  </ion-row>
+                  <ion-row *ngFor="let set of sets; let i = index" class="set-table-row">
+                    <ion-col size="3" class="set-table-col">{{ i + 1 }}</ion-col>
+                    <ion-col size="3" class="set-table-col">
+                      <ion-input type="number" [(ngModel)]="set.weight" name="weight{{ i }}"></ion-input>
+                    </ion-col>
+                    <ion-col size="3" class="set-table-col">
+                      <ion-input type="number" [(ngModel)]="set.reps" name="reps{{ i }}"></ion-input>
+                    </ion-col>
+                    <ion-col size="3" class="set-table-col">
+                      <ion-button color="danger" (click)="removeSet(i)"><ion-icon name="trash"></ion-icon></ion-button>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
               </ion-item>
-              <ion-button (click)="addSet()">Adaugă Set</ion-button>
-
-              <ion-button expand="full" type="submit">Adaugă</ion-button>
-              <ion-button expand="full" color="medium" (click)="closeAddWorkoutModal()">Anulează</ion-button>
+              <ion-grid class="button-row">
+                <ion-row>
+                  <ion-col size="4">
+                    <ion-button type="submit" color="success" class="button-submit full-width-button">
+                      Adaugă
+                    </ion-button>
+                  </ion-col>
+                  <ion-col size="4">
+                    <ion-button shape="round" color="primary" (click)="addSet()" class="button-add-set">
+                      <ion-icon slot="icon-only" name="add"></ion-icon>
+                    </ion-button>
+                  </ion-col>
+                  <ion-col size="4">
+                    <ion-button color="danger" (click)="closeAddWorkoutModal()" class="button-cancel full-width-button">
+                      Anulează
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+              
             </form>
           </ion-card-content>
         </ion-card>
