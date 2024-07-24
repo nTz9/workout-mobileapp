@@ -1,0 +1,124 @@
+/* General Calendar Styling */
+.calendar {
+    max-width: 100%;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    padding: 0 10px; /* Padding pentru a evita marginile */
+}
+
+/* Weekdays Row */
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border-bottom: 2px solid #ddd;
+    background-color: #f8f9fa;
+    margin-bottom: 10px;
+}
+
+.weekdays div {
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    background-color: #e9ecef;
+}
+
+/* Days Grid */
+.dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+}
+
+/* Individual Day Styling */
+.dates .day {
+    text-align: center;
+    padding: 15px;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Asigură că indicatorul nu iese din celulă */
+}
+
+.dates .day:hover {
+    background-color: #f1f1f1;
+}
+
+.dates .day.selected {
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+}
+
+/* Indicator for Workout Days */
+.dates .day.workout::after {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    background-color: #28a745;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 5px; /* Ajustează înălțimea indicatorului față de partea de jos */
+    right: 5px; /* Ajustează distanța indicatorului față de marginea dreaptă */
+}
+
+/* Add Workout Form */
+.add-item-card, .workouts-list-card {
+    margin: 10px;
+}
+
+.set-item ion-input {
+    width: 50%;
+}
+
+/* Ensure scroll for content inside ion-content */
+ion-content {
+    --padding-bottom: 50px; /* Adjust padding to avoid cut-off content */
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar, .add-item-card, .workouts-list-card {
+    flex-shrink: 0;
+}
+
+ion-grid {
+    flex-shrink: 0;
+}
+
+/* Responsive Design Adjustments */
+@media (max-width: 768px) {
+    .weekdays div,
+    .dates .day {
+        padding: 8px;
+        font-size: 0.9em;
+    }
+
+    .dates .day {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .weekdays div,
+    .dates .day {
+        padding: 6px;
+        font-size: 0.8em;
+    }
+
+    .dates .day {
+        padding: 8px;
+    }
+
+    .workouts-list-card ion-label h2 {
+        font-size: 1em;
+    }
+
+    .workouts-list-card ion-label p {
+        font-size: 0.9em;
+    }
+}

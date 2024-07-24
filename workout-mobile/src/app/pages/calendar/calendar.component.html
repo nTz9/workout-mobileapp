@@ -1,10 +1,94 @@
-<!-- calendar.component.html -->
 <ion-header>
   <ion-toolbar>
-    <ion-title>Calendar</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="prevMonth()">
+        <ion-icon name="chevron-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ viewDate | date: 'MMMM yyyy' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="nextMonth()">
+        <ion-icon name="chevron-forward"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-button (click)="addItem()">Add Item</ion-button>
+  <!-- Calendar -->
+  <div class="calendar">
+    <ion-grid>
+      <ion-row class="weekdays">
+        <ion-col *ngFor="let weekday of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']">
+          <div>{{ weekday }}</div>
+        </ion-col>
+      </ion-row>
+      <ion-row class="dates">
+        <ion-col *ngFor="let day of days">
+          <div
+            *ngIf="day !== null"
+            class="day"
+            [ngClass]="{'selected': isSelected(day), 'workout': events[formatDate(day)]}"
+            (click)="selectDay(day)">
+            {{ day.getDate() }}
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- Formular Adăugare Antrenament -->
+  <ion-card *ngIf="selectedDay !== null" class="add-item-card">
+    <ion-card-header>
+      <ion-card-title>Adaugă Antrenament pentru ziua {{ selectedDay | date:'dd/MM/yyyy' }}</ion-card-title>
+      <ion-card-subtitle>(Click pe o zi pentru a adăuga antrenamente)</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <form (ngSubmit)="addItem()">
+        <ion-item>
+          <ion-label>Tip Antrenament</ion-label>
+          <ion-input [(ngModel)]="trainingType" name="trainingType"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>Exercițiu</ion-label>
+          <ion-input [(ngModel)]="exercise" name="exercise"></ion-input>
+        </ion-item>
+        
+        <!-- Seturi -->
+        <ion-item class="set-item" *ngFor="let set of sets; let i = index">
+          <ion-label>Set {{ i + 1 }}</ion-label>
+          <ion-input type="number" [(ngModel)]="set.weight" name="weight{{ i }}" placeholder="Greutate (kg)"></ion-input>
+          <ion-input type="number" [(ngModel)]="set.reps" name="reps{{ i }}" placeholder="Repetiții"></ion-input>
+          <ion-button color="danger" (click)="removeSet(i)">Șterge Set</ion-button>
+        </ion-item>
+        <ion-button (click)="addSet()">Adaugă Set</ion-button>
+
+        <ion-button expand="full" type="submit">Adaugă</ion-button>
+        <ion-button expand="full" color="medium" (click)="cancelAdd()">Anulează</ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista Antrenamentelor pentru ziua selectată -->
+  <ion-card *ngIf="selectedDay && events[formatDate(selectedDay)] && events[formatDate(selectedDay)].length > 0" class="workouts-list-card">
+    <ion-card-header>
+      <ion-card-title>Antrenamente pentru ziua {{ selectedDay | date:'dd/MM/yyyy' }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let workout of events[formatDate(selectedDay)]">
+          <ion-label>
+            <h2>{{ workout.trainingType }}</h2>
+            <p>Exercițiu: {{ workout.exercise }}</p>
+            <ion-list *ngFor="let set of workout.sets">
+              <ion-item>
+                <p>Greutate: {{ set.weight }} kg</p>
+                <p>Rep: {{ set.reps }}</p>
+              </ion-item>
+            </ion-list>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
