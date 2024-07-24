@@ -41,6 +41,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden; /* Asigură că indicatorul nu iese din celulă */
+    border-radius: 5px;
 }
 
 .dates .day:hover {
@@ -69,15 +70,84 @@
 /* Add Workout Form */
 .add-item-card, .workouts-list-card {
     margin: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adăugați o umbră ușoară pentru un efect de adâncime */
+    border-radius: 10px; /* Colțuri rotunjite pentru carduri */
 }
 
-.set-item ion-input {
-    width: 50%;
+/* Styling for Workouts List Card */
+.workouts-list-card .training-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.workouts-list-card .sets-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 10px;
+}
+
+.workouts-list-card ion-grid {
+    padding: 0;
+}
+
+.workouts-list-card ion-row {
+    margin: 0;
+}
+
+.workouts-list-card ion-col {
+    padding: 0;
+}
+
+.workouts-list-card ion-col.size-6 {
+    padding: 5px;
+}
+
+/* Workout Item Styling */
+.workout-item {
+    margin-bottom: 10px;
+    border-radius: 10px; /* Colțuri rotunjite pentru itemele din listă */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Adăugați o umbră ușoară pentru un efect de adâncime */
+    background-color: #f9f9f9; /* Fundal ușor colorat pentru elementele de listă */
+}
+
+.workout-item h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.workout-item p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.workouts-list-card .sets-details {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Adăugați o umbră ușoară pentru tabelul seturilor */
+    padding: 5px;
+    font-size: 0.9em;
+}
+
+/* Button ADD */
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-button {
+    --border-radius: 50px; /* Pentru a face butonul oval */
+    width: 150px;
+    height: 40px;
+    text-align: center;
 }
 
 /* Ensure scroll for content inside ion-content */
 ion-content {
-    --padding-bottom: 50px; /* Adjust padding to avoid cut-off content */
+    --padding-bottom: 70px; /* Ajustați paddingul pentru a evita conținutul tăiat */
     display: flex;
     flex-direction: column;
 }
@@ -101,6 +171,14 @@ ion-grid {
     .dates .day {
         padding: 10px;
     }
+
+    .workouts-list-card ion-label h2 {
+        font-size: 1em;
+    }
+
+    .workouts-list-card ion-label p {
+        font-size: 0.9em;
+    }
 }
 
 @media (max-width: 576px) {
@@ -115,10 +193,10 @@ ion-grid {
     }
 
     .workouts-list-card ion-label h2 {
-        font-size: 1em;
+        font-size: 0.9em;
     }
 
     .workouts-list-card ion-label p {
-        font-size: 0.9em;
+        font-size: 0.8em;
     }
 }
