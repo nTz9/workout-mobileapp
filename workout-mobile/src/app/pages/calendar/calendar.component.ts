@@ -11,6 +11,7 @@ export class CalendarComponent  implements OnInit {
   viewDate: Date = new Date(); // Data curentă pentru vizualizare
   days: (Date | null)[] = []; // Inițializare corectă
   selectedDay: Date | null = null; // Ziua selectată
+  isModalOpen: boolean = false;
   trainingType: string = '';
   exercise: string = '';
   sets: { weight: number, reps: number }[] = []; // Seturi pentru exercițiu
@@ -136,6 +137,16 @@ export class CalendarComponent  implements OnInit {
   // Anulați adăugarea unui antrenament
   cancelAdd() {
     this.selectedDay = null;
+    this.trainingType = '';
+    this.exercise = '';
+    this.sets = [];
+  }
+  openAddWorkoutModal() {
+    this.isModalOpen = true;
+  }
+
+  closeAddWorkoutModal() {
+    this.isModalOpen = false;
     this.trainingType = '';
     this.exercise = '';
     this.sets = [];
