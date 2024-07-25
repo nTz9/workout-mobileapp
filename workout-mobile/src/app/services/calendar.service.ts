@@ -6,11 +6,8 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
   providedIn: 'root'
 })
 export class CalendarService {
-  private eventsCache = new Map<string, any[]>(); // Cache pentru evenimentele pe zile
-  private monthCache = new Set<string>(); // Cache pentru lunile deja încărcate
-  private selectedDayEvents = new BehaviorSubject<any[]>([]);
-
   private firestore: Firestore;
+  private eventsCache: { [key: string]: any[] } = {};
 
   constructor() {
     this.firestore = getFirestore();
@@ -38,13 +35,27 @@ export class CalendarService {
       events[date].push(data);
     });
 
+    // Cache events for the current month
+    this.eventsCache = events;
+
     return events;
   }
 
-  // Metodă pentru adăugarea unui eveniment în Firestore
+  // Metodă pentru obținerea evenimentelor pentru o anumită zi din cache
+  getEventsForDay(date: Date): any[] {
+    const formattedDate = this.formatDate(date);
+    return this.eventsCache[formattedDate] || [];
+  }
+
+  // Metodă pentru adăugarea unui eveniment în Firestore și actualizarea cache-ului
   async addEvent(event: any): Promise<void> {
     const docRef = collection(this.firestore, 'calendar');
     await addDoc(docRef, event);
+    const date = this.formatDate(new Date(event.timestamp));
+    if (!this.eventsCache[date]) {
+      this.eventsCache[date] = [];
+    }
+    this.eventsCache[date].push(event);
   }
 
   // Metodă pentru formatarea unei date în format YYYY-MM-DD

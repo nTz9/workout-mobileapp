@@ -53,6 +53,20 @@ export class CalendarComponent  implements OnInit {
     this.events = await this.calendarService.loadEventsForMonth(this.viewDate);
   }
 
+  // Selectați o zi și încărcați evenimentele pentru acea zi din cache
+  selectDay(day: Date) {
+    this.selectedDay = day;
+    this.loadEventsForSelectedDay();
+  }
+
+  // Încărcați evenimentele pentru ziua selectată din cache
+  loadEventsForSelectedDay() {
+    if (this.selectedDay) {
+      const formattedDate = this.formatDate(this.selectedDay);
+      this.events = { [formattedDate]: this.calendarService.getEventsForDay(this.selectedDay) };
+    }
+  }
+
   // Formatează data în format YYYY-MM-DD
   formatDate(date: Date): string {
     const year = date.getFullYear();
@@ -71,11 +85,6 @@ export class CalendarComponent  implements OnInit {
   nextMonth() {
     this.viewDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth() + 1, 1);
     this.loadCalendar();
-  }
-
-  // Selectați o zi
-  selectDay(day: Date) {
-    this.selectedDay = day;
   }
 
   // Verifică dacă ziua este selectată
