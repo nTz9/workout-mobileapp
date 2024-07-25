@@ -50,7 +50,13 @@ export class CalendarComponent  implements OnInit {
 
   // Încărcați evenimentele din Firestore
   async loadEvents() {
-    this.events = await this.calendarService.loadEventsForMonth(this.viewDate);
+    try {
+      // Încercați să obțineți evenimentele din cache (IndexedDB)
+      const events = await this.calendarService.getEventsForMonth(this.viewDate);
+      this.events = events;
+    } catch (error) {
+      console.error("Eroare la încărcarea evenimentelor: ", error);
+    }
   }
 
   // Selectați o zi și încărcați evenimentele pentru acea zi din cache
@@ -60,10 +66,12 @@ export class CalendarComponent  implements OnInit {
   }
 
   // Încărcați evenimentele pentru ziua selectată din cache
-  loadEventsForSelectedDay() {
+  async loadEventsForSelectedDay() {
     if (this.selectedDay) {
       const formattedDate = this.formatDate(this.selectedDay);
-      this.events = { [formattedDate]: this.calendarService.getEventsForDay(this.selectedDay) };
+      // Așteptați ca promisiunea să se rezolve
+      const eventsForDay = await this.calendarService.getEventsForDay(this.selectedDay);
+      this.events = { [formattedDate]: eventsForDay };
     }
   }
 

@@ -7,13 +7,56 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 })
 export class CalendarService {
   private firestore: Firestore;
-  private eventsCache: { [key: string]: any[] } = {};
+  private dbPromise: Promise<IDBDatabase>;
 
   constructor() {
     this.firestore = getFirestore();
+    this.dbPromise = this.initIndexedDB();
   }
 
-  // Metodă pentru încărcarea evenimentelor din Firestore pentru o lună întreagă
+  private async initIndexedDB(): Promise<IDBDatabase> {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('EventsDB', 1);
+
+      request.onupgradeneeded = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        db.createObjectStore('eventsCache', { keyPath: 'date' });
+      };
+
+      request.onsuccess = (event) => {
+        resolve((event.target as IDBOpenDBRequest).result);
+      };
+
+      request.onerror = (event) => {
+        reject((event.target as IDBOpenDBRequest).error);
+      };
+    });
+  }
+
+  private async saveToIndexedDB(date: string, data: any[]) {
+    const db = await this.dbPromise;
+    const transaction = db.transaction('eventsCache', 'readwrite');
+    const store = transaction.objectStore('eventsCache');
+    store.put({ date, data });
+
+    return new Promise<void>((resolve, reject) => {
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+    });
+  }
+
+  private async getFromIndexedDB(date: string): Promise<any[]> {
+    const db = await this.dbPromise;
+    const transaction = db.transaction('eventsCache', 'readonly');
+    const store = transaction.objectStore('eventsCache');
+    const request = store.get(date);
+
+    return new Promise((resolve, reject) => {
+      request.onsuccess = () => resolve(request.result?.data || []);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
   async loadEventsForMonth(viewDate: Date): Promise<{ [key: string]: any[] }> {
     const startOfMonth = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
     const endOfMonth = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0);
@@ -35,30 +78,56 @@ export class CalendarService {
       events[date].push(data);
     });
 
-    // Cache events for the current month
-    this.eventsCache = events;
+    // Save to IndexedDB
+    for (const [date, data] of Object.entries(events)) {
+      await this.saveToIndexedDB(date, data);
+    }
 
     return events;
   }
 
-  // Metodă pentru obținerea evenimentelor pentru o anumită zi din cache
-  getEventsForDay(date: Date): any[] {
-    const formattedDate = this.formatDate(date);
-    return this.eventsCache[formattedDate] || [];
+  async getEventsForMonth(viewDate: Date): Promise<{ [key: string]: any[] }> {
+    const startOfMonth = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
+    const endOfMonth = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0);
+    const cachePromises = [];
+
+    // Check if events are already in IndexedDB
+    for (let d = startOfMonth; d <= endOfMonth; d.setDate(d.getDate() + 1)) {
+      const date = this.formatDate(new Date(d));
+      cachePromises.push(this.getFromIndexedDB(date).then(data => ({ date, data })));
+    }
+
+    const cacheResults = await Promise.all(cachePromises);
+    const events: { [key: string]: any[] } = {};
+
+    cacheResults.forEach(result => {
+      if (result.data.length > 0) {
+        events[result.date] = result.data;
+      }
+    });
+
+    // If there are no events in cache, load from Firestore
+    if (Object.keys(events).length === 0) {
+      return this.loadEventsForMonth(viewDate);
+    }
+
+    return events;
   }
 
-  // Metodă pentru adăugarea unui eveniment în Firestore și actualizarea cache-ului
+  async getEventsForDay(date: Date): Promise<any[]> {
+    const formattedDate = this.formatDate(date);
+    return this.getFromIndexedDB(formattedDate);
+  }
+
   async addEvent(event: any): Promise<void> {
     const docRef = collection(this.firestore, 'calendar');
     await addDoc(docRef, event);
     const date = this.formatDate(new Date(event.timestamp));
-    if (!this.eventsCache[date]) {
-      this.eventsCache[date] = [];
-    }
-    this.eventsCache[date].push(event);
+    const existingData = await this.getFromIndexedDB(date);
+    existingData.push(event);
+    await this.saveToIndexedDB(date, existingData);
   }
 
-  // Metodă pentru formatarea unei date în format YYYY-MM-DD
   private formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
