@@ -116,7 +116,13 @@ export class CalendarService {
 
   async getEventsForDay(date: Date): Promise<any[]> {
     const formattedDate = this.formatDate(date);
-    return this.getFromIndexedDB(formattedDate);
+    const cacheData = await this.getFromIndexedDB(formattedDate);
+    
+    if (cacheData.length > 0) {
+      return cacheData;
+    } else {
+      return [];
+    }
   }
 
   async addEvent(event: any): Promise<void> {

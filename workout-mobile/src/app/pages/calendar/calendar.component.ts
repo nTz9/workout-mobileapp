@@ -69,9 +69,17 @@ export class CalendarComponent  implements OnInit {
   async loadEventsForSelectedDay() {
     if (this.selectedDay) {
       const formattedDate = this.formatDate(this.selectedDay);
-      // Așteptați ca promisiunea să se rezolve
       const eventsForDay = await this.calendarService.getEventsForDay(this.selectedDay);
-      this.events = { [formattedDate]: eventsForDay };
+      
+      // Adăugăm doar datele din IndexedDB la evenimente
+      if (eventsForDay.length > 0) {
+        this.events = { [formattedDate]: eventsForDay };
+      } else {
+        // Dacă nu avem date, verificăm dacă sunt deja în this.events
+        if (!this.events[formattedDate]) {
+          this.events[formattedDate] = [];
+        }
+      }
     }
   }
 
