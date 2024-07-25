@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { addDoc, collection, Firestore, getDocs, getFirestore, query, where } from 'firebase/firestore';
+import { CalendarService } from 'src/app/services/calendar.service';
 
 @Component({
   selector: 'app-calendar',
@@ -7,7 +7,6 @@ import { addDoc, collection, Firestore, getDocs, getFirestore, query, where } fr
   styleUrls: ['./calendar.component.scss'],
 })
 export class CalendarComponent  implements OnInit {
-  private firestore: Firestore;
   viewDate: Date = new Date(); // Data curentă pentru vizualizare
   days: (Date | null)[] = []; // Inițializare corectă
   selectedDay: Date | null = null; // Ziua selectată
@@ -17,9 +16,7 @@ export class CalendarComponent  implements OnInit {
   sets: { weight: number, reps: number }[] = []; // Seturi pentru exercițiu
   events: { [key: string]: any[] } = {}; // Evenimentele per zi
 
-  constructor() {
-    this.firestore = getFirestore();
-  }
+  constructor(private calendarService: CalendarService) {}
 
   ngOnInit() {
     this.loadCalendar();
@@ -53,21 +50,7 @@ export class CalendarComponent  implements OnInit {
 
   // Încărcați evenimentele din Firestore
   async loadEvents() {
-    const startOfMonth = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth(), 1);
-    const endOfMonth = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth() + 1, 0);
-    const q = query(collection(this.firestore, 'calendar'), where('timestamp', '>=', startOfMonth), where('timestamp', '<=', endOfMonth));
-
-    const querySnapshot = await getDocs(q);
-    this.events = {};
-
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      const date = this.formatDate(new Date(data['timestamp'].toDate()));
-      if (!this.events[date]) {
-        this.events[date] = [];
-      }
-      this.events[date].push(data);
-    });
+    this.events = await this.calendarService.loadEventsForMonth(this.viewDate);
   }
 
   // Formatează data în format YYYY-MM-DD
@@ -117,8 +100,7 @@ export class CalendarComponent  implements OnInit {
   async addItem() {
     if (this.selectedDay) {
       try {
-        const docRef = collection(this.firestore, 'calendar');
-        await addDoc(docRef, {
+        await this.calendarService.addEvent({
           timestamp: this.selectedDay,
           trainingType: this.trainingType,
           exercise: this.exercise,
@@ -141,10 +123,13 @@ export class CalendarComponent  implements OnInit {
     this.exercise = '';
     this.sets = [];
   }
+
+  // Deschideți modalul pentru adăugare antrenament
   openAddWorkoutModal() {
     this.isModalOpen = true;
   }
 
+  // Închideți modalul pentru adăugare antrenament
   closeAddWorkoutModal() {
     this.isModalOpen = false;
     this.trainingType = '';
